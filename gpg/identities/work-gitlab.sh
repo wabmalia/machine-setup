@@ -1,4 +1,4 @@
-# NewStore GitLab (gitlab.com) commit-signing identity. Read/sourced by
+# Work GitLab (gitlab.com) commit-signing identity. Read/sourced by
 # gpg/setup-gpg-keys.sh.
 #
 # Safe to delete this whole file if you leave the company — along with
@@ -9,14 +9,14 @@
 # the full checklist.
 #
 # Uses the same name/email already configured globally via chezmoi. If you
-# want NewStore commits signed under a different email, hardcode it below —
+# want work commits signed under a different email, hardcode it below —
 # this file never leaves your machine's copy of the repo... but remember it
 # WILL be committed if you push this repo, so only do that if you're fine
 # with that email being public.
 GIT_NAME="$(git config --global user.name)"
 GIT_EMAIL="$(git config --global user.email)"
 
-IDENTITY_NAME="GitLab (NewStore) commit signing"
+IDENTITY_NAME="GitLab (Work) commit signing"
 IDENTITY_EMAIL="$GIT_EMAIL"
 IDENTITY_UID="${GIT_NAME} <${GIT_EMAIL}>"
 IDENTITY_GITCONFIG_PATH="$HOME/.gitconfig-gitlab.com"

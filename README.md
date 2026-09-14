@@ -52,7 +52,7 @@ Private keys are never stored in this repo — they're generated straight into
 ```
 
 This generates one ed25519 key per identity defined under `ssh/identities/`
-(currently `github.sh` and `newstore-gitlab.sh`), loads each into the macOS
+(currently `github.sh` and `work-gitlab.sh`), loads each into the macOS
 Keychain-backed `ssh-agent`, and tries to register the public key
 automatically via `gh ssh-key add` / `glab ssh-key add` if you're already
 authenticated with that CLI (`gh auth login` / `glab auth login`) — otherwise
@@ -69,7 +69,7 @@ is safe; it skips any identity whose key file already exists.
 ```
 
 Same idea as SSH: generates one ed25519 signing key per identity under
-`gpg/identities/` (currently just `newstore-gitlab.sh`), and tries to
+`gpg/identities/` (currently just `work-gitlab.sh`), and tries to
 register the public key via `glab gpg-key add` / `gh gpg-key add` if
 authenticated, otherwise prints it for you to paste in manually.
 
@@ -87,35 +87,35 @@ so the passphrase prompt is a native macOS dialog.
 
 ## Company/client-specific config
 
-Some config only applies while you're at a given company — right now that's
-NewStore. Rather than mixing that into the shared defaults, it's isolated to
-a small set of files so it can be added or removed as one unit:
+Some config only applies while you're at a given company — kept generic as
+"work" rather than naming the employer, so this stays reusable across jobs.
+Rather than mixing that into the shared defaults, it's isolated to a small
+set of files so it can be added or removed as one unit:
 
-| File                                          | Purpose                          |
-|------------------------------------------------|-----------------------------------|
-| `home/dot_zshrc.d/newstore.zsh`                 | NewStore-specific aliases/exports |
-| `home/private_dot_ssh/config.d/newstore.conf`   | NewStore GitLab SSH host routing  |
-| `ssh/identities/newstore-gitlab.sh`             | NewStore GitLab SSH key definition |
-| `gpg/identities/newstore-gitlab.sh`             | NewStore GitLab GPG key definition |
+| File                                          | Purpose                     |
+|------------------------------------------------|------------------------------|
+| `home/dot_zshrc.d/work.zsh`                     | work-specific aliases/exports |
+| `home/private_dot_ssh/config.d/work.conf`       | work GitLab SSH host routing  |
+| `ssh/identities/work-gitlab.sh`                 | work GitLab SSH key definition |
+| `gpg/identities/work-gitlab.sh`                 | work GitLab GPG key definition |
 
 `gh`/`glab`/`gnupg`/`pinentry-mac` themselves stay in the shared `Brewfile`
 since they're generic tools, not company-specific — only the identity/config
 wiring above is. Likewise, the `includeIf` blocks in `home/dot_gitconfig.tmpl`
 and the `Include config.d/*.conf` line in `home/private_dot_ssh/config` are
 routing by **host** (gitlab.com), not by company — they stay even after
-leaving NewStore, they just won't match anything once the files below are
-gone.
+changing jobs, they just won't match anything once the files below are gone.
 
-**If you ever leave NewStore**: delete the four files above, then:
-- `rm ~/.ssh/id_ed25519_gitlab_newstore* ~/.gitconfig-gitlab.com`
+**If you ever change jobs**: delete the four files above, then:
+- `rm ~/.ssh/id_ed25519_gitlab_work* ~/.gitconfig-gitlab.com`
 - remove the GPG key: `gpg --delete-secret-and-public-key <fingerprint>`
   (find it with `gpg --list-secret-keys`)
 - run `chezmoi apply` to drop the generated SSH config block
 
-To add a new company/client later, follow the same pattern: a
-`home/dot_zshrc.d/<name>.zsh`, and if it needs its own git host, a
-`ssh/identities/<name>.sh` + `home/private_dot_ssh/config.d/<name>.conf`
-(+ a `gpg/identities/<name>.sh` for commit signing).
+Then add the new job's config following the same pattern: rename/recreate
+`home/dot_zshrc.d/work.zsh`, `ssh/identities/work-gitlab.sh`, and
+`gpg/identities/work-gitlab.sh` (or use a different name entirely if you
+want to keep more than one "work" context around, e.g. for a side client).
 
 ## Explicitly out of scope (for now)
 

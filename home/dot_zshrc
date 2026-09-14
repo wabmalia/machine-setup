@@ -1,4 +1,4 @@
-# Managed by chezmoi — source lives in home/dot_zshrc in the machine_scaffold repo.
+# Managed by chezmoi — source lives in home/dot_zshrc in the machine-setup repo.
 # Edit there (not ~/.zshrc directly) and run `chezmoi apply` to sync.
 
 # --- Homebrew ---

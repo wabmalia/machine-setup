@@ -9,8 +9,8 @@
 brew "chezmoi"      # dotfile manager, required by bootstrap.sh
 brew "git"
 brew "gh"           # GitHub CLI, used by ssh/identities/github.sh to register keys
-brew "glab"         # GitLab CLI, used by ssh/identities/newstore-gitlab.sh to register keys
-                    # (generic package — the NewStore-specific bits live under ssh/, not here)
+brew "glab"         # GitLab CLI, used by ssh/identities/work-gitlab.sh to register keys
+                    # (generic package — the work-specific bits live under ssh/, not here)
 brew "gnupg"        # GPG, used by gpg/setup-gpg-keys.sh for commit signing
 brew "pinentry-mac" # native macOS passphrase prompt for gpg-agent
 brew "zsh"

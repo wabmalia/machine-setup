@@ -1,10 +1,10 @@
-# NewStore-specific zsh config — auto-sourced by dot_zshrc from ~/.zshrc.d/.
+# Work-specific zsh config — auto-sourced by dot_zshrc from ~/.zshrc.d/.
 # Keep anything company-specific here, never in the shared dot_zshrc defaults.
 
 # --- Aliases ---
-# alias ns-deploy="..."
+# alias work-deploy="..."
 
 # --- Exports ---
-# export NEWSTORE_TENANT="..."
+# export WORK_TENANT="..."
 
 # --- Functions ---
