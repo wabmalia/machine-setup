@@ -1,0 +1,25 @@
+# Managed by chezmoi — source lives in home/dot_zshrc in the machine_scaffold repo.
+# Edit there (not ~/.zshrc directly) and run `chezmoi apply` to sync.
+
+# --- Homebrew ---
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# --- History ---
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+
+# --- Tool integrations (only load if installed, so this file works
+#     even before `brew bundle` has finished) ---
+command -v fzf >/dev/null && source <(fzf --zsh)
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+# --- Aliases ---
+command -v eza >/dev/null && alias ls="eza"
+command -v bat >/dev/null && alias cat="bat"
+alias ll="ls -lah"
+
+# --- Local/machine-specific overrides ---
+# Kept outside chezmoi so secrets/one-off tweaks never land in git.
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

@@ -1,0 +1,9 @@
+{{/* Prompted once on `chezmoi init`, then cached in ~/.config/chezmoi/chezmoi.toml.
+     This keeps personal info (name/email) out of the git repo itself, so it's
+     safe to make this repo public and reusable across work/personal machines. */}}
+{{- $name := promptStringOnce . "name" "Your full name (for git commits)" -}}
+{{- $email := promptStringOnce . "email" "Your email (for git commits)" -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
