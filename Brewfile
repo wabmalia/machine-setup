@@ -41,6 +41,7 @@ cask "rectangle"     # window management
 cask "1password"
 cask "1password-cli"
 cask "claude-code"
+cask "postman"
 
 # --- Mac App Store apps (requires `mas` + being signed in to the App Store) ---
 # brew "mas"

@@ -22,6 +22,12 @@ fi
 echo "==> Installing packages from Brewfile..."
 brew bundle --file=./Brewfile
 
+# Work-specific packages, if present (see Brewfile.work).
+if [ -f ./Brewfile.work ]; then
+    echo "==> Installing packages from Brewfile.work..."
+    brew bundle --file=./Brewfile.work
+fi
+
 # --- 3. Dotfiles via chezmoi ---
 # .chezmoiroot in this repo points chezmoi at ./home, so this repo doubles as
 # the chezmoi source directory — no separate dotfiles repo needed.

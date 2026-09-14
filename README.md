@@ -98,6 +98,7 @@ set of files so it can be added or removed as one unit:
 | `home/private_dot_ssh/config.d/work.conf`       | work GitLab SSH host routing  |
 | `ssh/identities/work-gitlab.sh`                 | work GitLab SSH key definition |
 | `gpg/identities/work-gitlab.sh`                 | work GitLab GPG key definition |
+| `Brewfile.work`                                 | work-only packages (e.g. Tuple) |
 
 `gh`/`glab`/`gnupg`/`pinentry-mac` themselves stay in the shared `Brewfile`
 since they're generic tools, not company-specific — only the identity/config
@@ -105,17 +106,22 @@ wiring above is. Likewise, the `includeIf` blocks in `home/dot_gitconfig.tmpl`
 and the `Include config.d/*.conf` line in `home/private_dot_ssh/config` are
 routing by **host** (gitlab.com), not by company — they stay even after
 changing jobs, they just won't match anything once the files below are gone.
+`bootstrap.sh` runs `brew bundle --file=./Brewfile.work` automatically, but
+only if that file exists.
 
-**If you ever change jobs**: delete the four files above, then:
+**If you ever change jobs**: delete the five files above, then:
 - `rm ~/.ssh/id_ed25519_gitlab_work* ~/.gitconfig-gitlab.com`
 - remove the GPG key: `gpg --delete-secret-and-public-key <fingerprint>`
   (find it with `gpg --list-secret-keys`)
 - run `chezmoi apply` to drop the generated SSH config block
+- optionally `brew uninstall --cask tuple` (or whatever else was only in
+  `Brewfile.work`)
 
 Then add the new job's config following the same pattern: rename/recreate
-`home/dot_zshrc.d/work.zsh`, `ssh/identities/work-gitlab.sh`, and
-`gpg/identities/work-gitlab.sh` (or use a different name entirely if you
-want to keep more than one "work" context around, e.g. for a side client).
+`home/dot_zshrc.d/work.zsh`, `ssh/identities/work-gitlab.sh`,
+`gpg/identities/work-gitlab.sh`, and `Brewfile.work` (or use a different
+name entirely if you want to keep more than one "work" context around, e.g.
+for a side client).
 
 ## Explicitly out of scope (for now)
 

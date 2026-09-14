@@ -1,0 +1,8 @@
+# Work-specific package manifest, applied in addition to Brewfile via
+# `brew bundle --file=./Brewfile.work` (bootstrap.sh runs this automatically
+# if the file exists).
+#
+# Safe to delete this whole file if you change jobs — nothing else depends
+# on it. See README.md "Company/client-specific config".
+
+cask "tuple"  # remote pair programming
