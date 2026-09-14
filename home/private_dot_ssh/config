@@ -1,0 +1,10 @@
+# Managed by chezmoi — source lives in home/private_dot_ssh/config in the
+# machine_scaffold repo. Contains only host routing, never key material.
+#
+# Company/client-specific host blocks live in config.d/ (see config.d/newstore.conf)
+# so they can be deleted independently of this file.
+Include config.d/*.conf
+
+Host github.com
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes

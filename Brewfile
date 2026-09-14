@@ -8,7 +8,11 @@
 # --- CLI tools ---
 brew "chezmoi"      # dotfile manager, required by bootstrap.sh
 brew "git"
-brew "gh"           # GitHub CLI
+brew "gh"           # GitHub CLI, used by ssh/identities/github.sh to register keys
+brew "glab"         # GitLab CLI, used by ssh/identities/newstore-gitlab.sh to register keys
+                    # (generic package — the NewStore-specific bits live under ssh/, not here)
+brew "gnupg"        # GPG, used by gpg/setup-gpg-keys.sh for commit signing
+brew "pinentry-mac" # native macOS passphrase prompt for gpg-agent
 brew "zsh"
 brew "fzf"
 brew "ripgrep"
@@ -19,12 +23,21 @@ brew "jq"
 brew "tmux"
 brew "neovim"
 brew "htop"
+brew "mise"         # runtime version manager (node, python, ruby, etc.)
+
+# --- Zsh completion/autosuggestion plugins (sourced directly in dot_zshrc, no framework) ---
+brew "zsh-completions"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
 
 # --- GUI apps (casks) ---
 cask "visual-studio-code"
-cask "iterm2"
-cask "google-chrome"
+cask "ghostty"
+cask "brave-browser"
 cask "rectangle"     # window management
+cask "1password"
+cask "1password-cli"
+cask "claude-code"
 
 # --- Mac App Store apps (requires `mas` + being signed in to the App Store) ---
 # brew "mas"

@@ -1,1 +1,10 @@
 .DS_Store
+
+# Defense in depth: SSH keys are generated straight into ~/.ssh by
+# ssh/setup-ssh-keys.sh and should never live inside this repo, but ignore
+# them here too in case one ever gets created/copied in by mistake.
+id_ed25519*
+id_rsa*
+id_ecdsa*
+*.pem
+*.ppk

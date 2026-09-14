@@ -1,4 +1,4 @@
-# machine_scaffold
+# machine-setup
 
 Personal macOS machine setup: clone this repo on a new machine and run one
 script to get packages, dotfiles, and system defaults configured.
@@ -6,8 +6,8 @@ script to get packages, dotfiles, and system defaults configured.
 ## Quick start
 
 ```sh
-git clone <this-repo-url> ~/dev/machine_scaffold
-cd ~/dev/machine_scaffold
+git clone <this-repo-url> ~/dev/machine-setup
+cd ~/dev/machine-setup
 ./bootstrap.sh
 ```
 
@@ -22,6 +22,8 @@ it's also how you sync a machine after pulling new changes.
 | `Brewfile`        | CLI tools, GUI apps (casks), and Mac App Store apps via `brew bundle`. |
 | `home/`           | [chezmoi](https://www.chezmoi.io) source state — dotfiles.          |
 | `macos/defaults.sh` | macOS system preferences (`defaults write` settings).              |
+| `ssh/`            | SSH key generation (not run by `bootstrap.sh` — see below).          |
+| `gpg/`            | GPG signing-key generation (not run by `bootstrap.sh` — see below).  |
 
 `.chezmoiroot` points chezmoi at `home/`, so this single repo is both the
 machine scaffold *and* the chezmoi source directory — no second repo needed.
@@ -40,10 +42,85 @@ machine scaffold *and* the chezmoi source directory — no second repo needed.
   prompts for it once on first `chezmoi init` and caches the answer locally
   in `~/.config/chezmoi/chezmoi.toml`, so this repo is safe to make public.
 
+## SSH keys
+
+Private keys are never stored in this repo — they're generated straight into
+`~/.ssh` on each machine and stay there.
+
+```sh
+./ssh/setup-ssh-keys.sh
+```
+
+This generates one ed25519 key per identity defined under `ssh/identities/`
+(currently `github.sh` and `newstore-gitlab.sh`), loads each into the macOS
+Keychain-backed `ssh-agent`, and tries to register the public key
+automatically via `gh ssh-key add` / `glab ssh-key add` if you're already
+authenticated with that CLI (`gh auth login` / `glab auth login`) — otherwise
+it prints the public key for you to paste in manually. Re-running the script
+is safe; it skips any identity whose key file already exists.
+
+`home/private_dot_ssh/config` (→ `~/.ssh/config`) only contains host routing
+(`IdentityFile` paths), never key material, so it's safe to commit.
+
+## GPG (commit signing)
+
+```sh
+./gpg/setup-gpg-keys.sh
+```
+
+Same idea as SSH: generates one ed25519 signing key per identity under
+`gpg/identities/` (currently just `newstore-gitlab.sh`), and tries to
+register the public key via `glab gpg-key add` / `gh gpg-key add` if
+authenticated, otherwise prints it for you to paste in manually.
+
+Unlike SSH, the private key itself lives in GPG's own keyring
+(`~/.gnupg`), not a predictable file path — so what the script generates
+per-machine is a small git config file (e.g. `~/.gitconfig-gitlab.com`)
+pointing `user.signingkey` at that machine's key fingerprint, with
+`commit.gpgsign`/`tag.gpgsign` turned on. That file is **not** managed by
+chezmoi (the fingerprint is different on every machine), only referenced —
+`home/dot_gitconfig.tmpl` includes it conditionally, based on the repo's
+remote URL (`includeIf "hasconfig:remote.*.url:...gitlab.com..."`), so
+signing only kicks in for gitlab.com repos and every other repo is
+unaffected. `home/private_dot_gnupg/gpg-agent.conf` wires up `pinentry-mac`
+so the passphrase prompt is a native macOS dialog.
+
+## Company/client-specific config
+
+Some config only applies while you're at a given company — right now that's
+NewStore. Rather than mixing that into the shared defaults, it's isolated to
+a small set of files so it can be added or removed as one unit:
+
+| File                                          | Purpose                          |
+|------------------------------------------------|-----------------------------------|
+| `home/dot_zshrc.d/newstore.zsh`                 | NewStore-specific aliases/exports |
+| `home/private_dot_ssh/config.d/newstore.conf`   | NewStore GitLab SSH host routing  |
+| `ssh/identities/newstore-gitlab.sh`             | NewStore GitLab SSH key definition |
+| `gpg/identities/newstore-gitlab.sh`             | NewStore GitLab GPG key definition |
+
+`gh`/`glab`/`gnupg`/`pinentry-mac` themselves stay in the shared `Brewfile`
+since they're generic tools, not company-specific — only the identity/config
+wiring above is. Likewise, the `includeIf` blocks in `home/dot_gitconfig.tmpl`
+and the `Include config.d/*.conf` line in `home/private_dot_ssh/config` are
+routing by **host** (gitlab.com), not by company — they stay even after
+leaving NewStore, they just won't match anything once the files below are
+gone.
+
+**If you ever leave NewStore**: delete the four files above, then:
+- `rm ~/.ssh/id_ed25519_gitlab_newstore* ~/.gitconfig-gitlab.com`
+- remove the GPG key: `gpg --delete-secret-and-public-key <fingerprint>`
+  (find it with `gpg --list-secret-keys`)
+- run `chezmoi apply` to drop the generated SSH config block
+
+To add a new company/client later, follow the same pattern: a
+`home/dot_zshrc.d/<name>.zsh`, and if it needs its own git host, a
+`ssh/identities/<name>.sh` + `home/private_dot_ssh/config.d/<name>.conf`
+(+ a `gpg/identities/<name>.sh` for commit signing).
+
 ## Explicitly out of scope (for now)
 
-- **Secrets / SSH / GPG keys**: not handled here on purpose — these shouldn't
-  live in a plain git repo. If/when needed, look at chezmoi's built-in
-  integrations with a password manager (1Password, Bitwarden, etc.) rather
-  than storing secrets as files.
+- **Other secrets** (API tokens, etc.): not handled here on purpose — these
+  shouldn't live in a plain git repo. If/when needed, look at chezmoi's
+  built-in integrations with a password manager (1Password, Bitwarden, etc.)
+  rather than storing secrets as files.
 - **Linux support**: this scaffold currently assumes macOS + Homebrew.

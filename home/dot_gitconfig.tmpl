@@ -19,3 +19,12 @@
     co = checkout
     br = branch
     lg = log --oneline --graph --decorate --all
+
+# Per-host config, generated/owned entirely by gpg/setup-gpg-keys.sh (not
+# chezmoi) — e.g. commit signing key. Routed by remote URL, not by company
+# name, so this stays generic even if what's behind gitlab.com changes.
+# See README.md "Company/client-specific config".
+[includeIf "hasconfig:remote.*.url:git@gitlab.com:**"]
+    path = ~/.gitconfig-gitlab.com
+[includeIf "hasconfig:remote.*.url:https://gitlab.com/**"]
+    path = ~/.gitconfig-gitlab.com

@@ -9,16 +9,62 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt SHARE_HISTORY
 setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt APPEND_HISTORY
+
+# --- Completion ---
+# fpath must be set before compinit; Homebrew installs its own completions
+# under site-functions, plus the zsh-completions formula adds more.
+fpath=("$(brew --prefix)/share/zsh-completions" "$(brew --prefix)/share/zsh/site-functions" $fpath)
+
+autoload -Uz compinit
+# Only regenerate the completion cache once a day — makes startup fast.
+_comp_dump="${ZDOTDIR:-$HOME}/.zcompdump"
+if [[ -n "$_comp_dump"(#qN.mh+24) ]]; then
+    compinit -d "$_comp_dump"
+else
+    compinit -C -d "$_comp_dump"
+fi
+unset _comp_dump
+
+zstyle ':completion:*' menu select                       # arrow-key menu instead of cycling
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case-insensitive matching
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"   # colorize file completions
+zstyle ':completion:*' group-name ''                      # group completions by type
+zstyle ':completion:*:descriptions' format '%F{blue}-- %d --%f'
+
+setopt AUTO_MENU
+setopt COMPLETE_IN_WORD
 
 # --- Tool integrations (only load if installed, so this file works
 #     even before `brew bundle` has finished) ---
 command -v fzf >/dev/null && source <(fzf --zsh)
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+command -v mise >/dev/null && eval "$(mise activate zsh)"
+
+# --- Autosuggestions + syntax highlighting ---
+# Order matters: autosuggestions before syntax-highlighting, which must load last.
+_zsh_autosuggestions="$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[ -f "$_zsh_autosuggestions" ] && source "$_zsh_autosuggestions"
+unset _zsh_autosuggestions
+
+_zsh_syntax_highlighting="$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+[ -f "$_zsh_syntax_highlighting" ] && source "$_zsh_syntax_highlighting"
+unset _zsh_syntax_highlighting
 
 # --- Aliases ---
 command -v eza >/dev/null && alias ls="eza"
 command -v bat >/dev/null && alias cat="bat"
 alias ll="ls -lah"
+
+# --- Context-specific config (work, clients, etc.) ---
+# One file per context under home/dot_zshrc.d/ in the repo (-> ~/.zshrc.d/),
+# kept separate from the defaults above. Add a new file for a new context;
+# never add company/client specifics to the defaults themselves.
+for _ctx_file in "$HOME"/.zshrc.d/*.zsh(N); do
+    source "$_ctx_file"
+done
+unset _ctx_file
 
 # --- Local/machine-specific overrides ---
 # Kept outside chezmoi so secrets/one-off tweaks never land in git.

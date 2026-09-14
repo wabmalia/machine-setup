@@ -2,8 +2,8 @@
 # Entry point for setting up a new macOS machine from this repo.
 #
 # Usage:
-#   git clone <your-repo-url> ~/dev/machine_scaffold
-#   cd ~/dev/machine_scaffold && ./bootstrap.sh
+#   git clone <your-repo-url> ~/dev/machine-setup
+#   cd ~/dev/machine-setup && ./bootstrap.sh
 #
 # Safe to re-run any time (e.g. after adding a package to the Brewfile or
 # editing a dotfile) — every step here is idempotent.
