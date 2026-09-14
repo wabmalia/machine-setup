@@ -24,6 +24,9 @@ brew "tmux"
 brew "neovim"
 brew "htop"
 brew "mise"         # runtime version manager (node, python, ruby, etc.)
+brew "uv"           # Python package/project manager
+brew "awscli"
+brew "aws-sso-cli"  # `aws-sso` — SSO-based AWS credential management
 
 # --- Zsh completion/autosuggestion plugins (sourced directly in dot_zshrc, no framework) ---
 brew "zsh-completions"
