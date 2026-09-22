@@ -37,7 +37,7 @@ brew "zsh-syntax-highlighting"
 cask "visual-studio-code"
 cask "ghostty"
 cask "brave-browser"
-cask "rectangle"     # window management
+cask "raycast"       # launcher + window management (replaced Rectangle)
 cask "1password"
 cask "1password-cli"
 cask "claude-code"
