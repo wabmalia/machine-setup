@@ -28,13 +28,22 @@ if [ -f ./Brewfile.work ]; then
     brew bundle --file=./Brewfile.work
 fi
 
-# --- 3. Dotfiles via chezmoi ---
+# --- 3. rtk (token-optimized CLI proxy for Claude Code) ---
+# Wires up the global hook + RTK.md so `rtk`-known commands get rewritten
+# transparently inside Claude Code. Runs after claude-code is installed
+# above. --auto-patch skips the interactive confirmation prompt.
+if command -v rtk >/dev/null 2>&1; then
+    echo "==> Initializing rtk for Claude Code..."
+    rtk init -g --auto-patch
+fi
+
+# --- 4. Dotfiles via chezmoi ---
 # .chezmoiroot in this repo points chezmoi at ./home, so this repo doubles as
 # the chezmoi source directory — no separate dotfiles repo needed.
 echo "==> Applying dotfiles with chezmoi..."
 chezmoi init --apply --source="$(pwd)"
 
-# --- 4. macOS system defaults (optional, comment out if unwanted) ---
+# --- 5. macOS system defaults (optional, comment out if unwanted) ---
 echo "==> Applying macOS defaults..."
 ./macos/defaults.sh
 

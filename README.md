@@ -18,7 +18,7 @@ it's also how you sync a machine after pulling new changes.
 
 | Path              | Purpose                                                             |
 |-------------------|----------------------------------------------------------------------|
-| `bootstrap.sh`    | Entry point: installs Homebrew, runs the other three pieces below.   |
+| `bootstrap.sh`    | Entry point: installs Homebrew, runs the other pieces below.         |
 | `Brewfile`        | CLI tools, GUI apps (casks), and Mac App Store apps via `brew bundle`. |
 | `home/`           | [chezmoi](https://www.chezmoi.io) source state — dotfiles.          |
 | `macos/defaults.sh` | macOS system preferences (`defaults write` settings).              |
