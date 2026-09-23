@@ -28,20 +28,33 @@ if [ -f ./Brewfile.work ]; then
     brew bundle --file=./Brewfile.work
 fi
 
-# --- 3. rtk (token-optimized CLI proxy for Claude Code) ---
+# --- 3. Dotfiles via chezmoi ---
+# .chezmoiroot in this repo points chezmoi at ./home, so this repo doubles as
+# the chezmoi source directory — no separate dotfiles repo needed. This lays
+# down the generic ~/.claude/settings.json before the two steps below touch it.
+echo "==> Applying dotfiles with chezmoi..."
+chezmoi init --apply --source="$(pwd)"
+
+# Work-specific Claude settings, if present (see claude-settings.work.json).
+# Deep-merges enabledPlugins/extraKnownMarketplaces on top of the generic
+# settings.json chezmoi just wrote, same idea as Brewfile.work.
+if [ -f ./claude-settings.work.json ]; then
+    echo "==> Merging work-specific Claude settings..."
+    jq -s '.[0] * .[1]' "$HOME/.claude/settings.json" ./claude-settings.work.json \
+        > "$HOME/.claude/settings.json.tmp"
+    mv "$HOME/.claude/settings.json.tmp" "$HOME/.claude/settings.json"
+fi
+
+# --- 4. rtk (token-optimized CLI proxy for Claude Code) ---
 # Wires up the global hook + RTK.md so `rtk`-known commands get rewritten
-# transparently inside Claude Code. Runs after claude-code is installed
-# above. --auto-patch skips the interactive confirmation prompt.
+# transparently inside Claude Code. Runs after claude-code is installed and
+# after settings.json is in its final form above, since this patches that
+# same file to add its own hook entry (idempotent — safe to re-run).
+# --auto-patch skips the interactive confirmation prompt.
 if command -v rtk >/dev/null 2>&1; then
     echo "==> Initializing rtk for Claude Code..."
     rtk init -g --auto-patch
 fi
-
-# --- 4. Dotfiles via chezmoi ---
-# .chezmoiroot in this repo points chezmoi at ./home, so this repo doubles as
-# the chezmoi source directory — no separate dotfiles repo needed.
-echo "==> Applying dotfiles with chezmoi..."
-chezmoi init --apply --source="$(pwd)"
 
 # --- 5. macOS system defaults (optional, comment out if unwanted) ---
 echo "==> Applying macOS defaults..."

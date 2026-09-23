@@ -1,0 +1,17 @@
+{
+  "enabledPlugins": {
+    "go-upgrade@team-payment": true,
+    "newstore@wabmalia": true,
+    "payment@team-payment": true,
+    "support@team-payment": true
+  },
+  "extraKnownMarketplaces": {
+    "team-payment": {
+      "autoUpdate": true,
+      "source": {
+        "source": "git",
+        "url": "https://gitlab.com/newstore/engineering/payment/skills.git"
+      }
+    }
+  }
+}

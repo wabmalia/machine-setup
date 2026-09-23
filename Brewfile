@@ -28,6 +28,9 @@ brew "uv"           # Python package/project manager
 brew "awscli"
 brew "aws-sso-cli"  # `aws-sso` — SSO-based AWS credential management
 brew "rtk"          # token-optimized CLI proxy for Claude Code, wired up by bootstrap.sh after install
+brew "docker"        # Docker CLI (no Docker Desktop — see colima below)
+brew "docker-compose"
+brew "colima"        # runs the Docker VM backend; start with `colima start`
 
 # --- Zsh completion/autosuggestion plugins (sourced directly in dot_zshrc, no framework) ---
 brew "zsh-completions"
