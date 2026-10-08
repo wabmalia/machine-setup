@@ -1,0 +1,18 @@
+# Ghostty config. Managed by chezmoi: source lives in
+# home/dot_config/ghostty/config in the machine-setup repo.
+# All options: `ghostty +show-config --default --docs`
+
+# Follow the macOS light/dark setting.
+theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+
+# Nerd Font so starship's git/language glyphs render (installed via Brewfile).
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+
+window-padding-x = 8
+window-padding-y = 6
+macos-titlebar-style = tabs
+
+# Already Ghostty's default; set explicitly because ~/.claude/cc-status relies
+# on it to surface "Claude finished / needs you" alerts (OSC 9).
+desktop-notifications = true

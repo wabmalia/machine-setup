@@ -42,6 +42,18 @@ machine scaffold *and* the chezmoi source directory — no second repo needed.
   prompts for it once on first `chezmoi init` and caches the answer locally
   in `~/.config/chezmoi/chezmoi.toml`, so this repo is safe to make public.
 
+## Shell and terminal
+
+- **Prompt**: [Starship](https://starship.rs), initialised at the end of the
+  tool integrations in `dot_zshrc` and configured in
+  `home/dot_config/starship.toml` (→ `~/.config/starship.toml`). It shows the
+  path, git branch/status, the active Python/Node/Go/AWS context, and how long
+  slow commands took.
+- **Terminal**: Ghostty, configured in `home/dot_config/ghostty/config`. The
+  theme follows macOS light/dark, and the font is JetBrains Mono Nerd Font
+  (a Brewfile cask) so Starship's glyphs render. Check edits with
+  `ghostty +validate-config` and reload with ⌘⇧,.
+
 ## SSH keys
 
 Private keys are never stored in this repo — they're generated straight into

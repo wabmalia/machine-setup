@@ -1,0 +1,39 @@
+# Starship prompt config. Managed by chezmoi: source lives in
+# home/dot_config/starship.toml in the machine-setup repo.
+# Reference: https://starship.rs/config/
+
+# Blank line between commands keeps scrollback readable.
+add_newline = true
+
+# Path, git, the active toolchain for the project, how long the last command
+# took, then the prompt character on its own line.
+format = """
+$directory\
+$git_branch\
+$git_status\
+$python\
+$nodejs\
+$golang\
+$aws\
+$cmd_duration\
+$line_break\
+$character"""
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+
+[git_status]
+# Default symbols, but without the brackets' noise when the tree is clean.
+format = '([\[$all_status$ahead_behind\]]($style) )'
+
+[cmd_duration]
+min_time = 2_000  # only show for commands that took 2s or more
+
+[aws]
+# Only shown when AWS_PROFILE etc. is set, which is when it matters.
+format = 'on [$symbol($profile )(\($region\) )]($style)'
+
+[character]
+success_symbol = '[❯](bold green)'
+error_symbol = '[❯](bold red)'

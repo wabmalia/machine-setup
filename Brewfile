@@ -36,6 +36,8 @@ brew "colima"        # runs the Docker VM backend; start with `colima start`
 brew "zsh-completions"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
+brew "starship"     # prompt, configured in home/dot_config/starship.toml
+brew "zoxide"       # smarter `cd` (`z <dir>`), initialised in dot_zshrc
 
 # --- GUI apps (casks) ---
 cask "visual-studio-code"
@@ -46,6 +48,9 @@ cask "1password"
 cask "1password-cli"
 cask "claude-code"
 cask "postman"
+
+# --- Fonts ---
+cask "font-jetbrains-mono-nerd-font"  # Nerd Font glyphs for the starship prompt; set in the Ghostty config
 
 # --- Mac App Store apps (requires `mas` + being signed in to the App Store) ---
 # brew "mas"
