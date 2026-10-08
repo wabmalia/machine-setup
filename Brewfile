@@ -25,6 +25,8 @@ brew "neovim"
 brew "htop"
 brew "mise"         # runtime version manager (node, python, ruby, etc.)
 brew "uv"           # Python package/project manager
+brew "node"         # global runtime for the claude-mem plugin (its MCP server and hooks);
+brew "bun"          #   per-project versions still come from mise
 brew "awscli"
 brew "aws-sso-cli"  # `aws-sso` — SSO-based AWS credential management
 brew "rtk"          # token-optimized CLI proxy for Claude Code, wired up by bootstrap.sh after install
