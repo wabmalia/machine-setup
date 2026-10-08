@@ -53,7 +53,15 @@ unset _brew_prefix _d
 # the chezmoi source directory — no separate dotfiles repo needed. This lays
 # down the generic ~/.claude/settings.json before the two steps below touch it.
 echo "==> Applying dotfiles with chezmoi..."
-chezmoi init --apply --source="$(pwd)"
+chezmoi init --source="$(pwd)"
+# ~/.claude/settings.json gets rewritten after this step - the jq merge and
+# `rtk init` below both patch it - so chezmoi always sees it as modified behind
+# its back and stops to ask what to do, on every single re-run. This repo is
+# the source of truth for it and both later steps re-apply deterministically on
+# top, so force just that one file. Everything else keeps the normal prompting
+# apply, so a genuine local edit to e.g. .zshrc still isn't silently clobbered.
+chezmoi apply --force --source="$(pwd)" "$HOME/.claude/settings.json"
+chezmoi apply --source="$(pwd)"
 
 # Work-specific Claude settings, if present (see claude-settings.work.json).
 # Deep-merges enabledPlugins/extraKnownMarketplaces on top of the generic
@@ -63,6 +71,7 @@ if [ -f ./claude-settings.work.json ]; then
     jq -s '.[0] * .[1]' "$HOME/.claude/settings.json" ./claude-settings.work.json \
         > "$HOME/.claude/settings.json.tmp"
     mv "$HOME/.claude/settings.json.tmp" "$HOME/.claude/settings.json"
+    chmod 600 "$HOME/.claude/settings.json"
 fi
 
 # --- 5. rtk (token-optimized CLI proxy for Claude Code) ---

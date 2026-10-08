@@ -1,0 +1,62 @@
+#!/bin/sh
+# Reports Claude Code session state to the terminal emulator.
+#
+# Uses only OSC escape sequences that every modern terminal understands,
+# rather than iTerm2's proprietary SetUserVar (this replaced a hardcoded
+# ~/.config/iterm2/cc-status):
+#   OSC 2 - set window/tab title  (Ghostty, iTerm2, kitty, WezTerm, Terminal.app)
+#   OSC 9 - desktop notification  (Ghostty, iTerm2, WezTerm; ignored elsewhere)
+# A terminal that doesn't recognise a sequence ignores it, so this degrades
+# quietly on anything exotic instead of spraying junk into the scrollback.
+#
+# Claude Code captures hook stdout and parses it for control directives, so
+# every escape sequence goes to /dev/tty and stdout is deliberately left empty.
+# Always exits 0 - a cosmetic status hook must never be able to fail a session.
+
+set -u
+
+# No usable controlling terminal (CI, piped, headless, sandboxed).
+# `test -w /dev/tty` is not enough here: the device node can pass that test and
+# still fail to open with "Device not configured", which would leak stderr and
+# make Claude Code report the hook as failed. So actually try to open it.
+{ : >/dev/tty; } 2>/dev/null || exit 0
+
+input=$(cat 2>/dev/null) || exit 0
+[ -n "$input" ] || exit 0
+
+# jq is in the Brewfile, but never assume it on a half-bootstrapped machine.
+command -v jq >/dev/null 2>&1 || exit 0
+
+event=$(printf '%s' "$input" | jq -r '.hook_event_name // empty' 2>/dev/null)
+[ -n "$event" ] || exit 0
+
+# Claude passes the session cwd; fall back to the hook's own if absent.
+cwd=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null)
+[ -n "$cwd" ] || cwd=$(pwd 2>/dev/null) || cwd=""
+dir=$(basename "$cwd" 2>/dev/null) || dir="?"
+
+notify=""
+case "$event" in
+    SessionStart)      state="ready" ;;
+    UserPromptSubmit)  state="thinking" ;;
+    PreToolUse)        state="working" ;;
+    PostToolUse)       state="working" ;;
+    SubagentStop)      state="working" ;;
+    Notification)      state="attention";  notify="Claude Code needs your attention" ;;
+    PermissionRequest) state="permission"; notify="Claude Code is asking for permission" ;;
+    Stop)              state="done";       notify="Claude Code finished in $dir" ;;
+    StopFailure)       state="failed";     notify="Claude Code stopped with an error in $dir" ;;
+    SessionEnd)        state="" ;;
+    *)                 state="" ;;
+esac
+
+if [ -n "$state" ]; then
+    printf '\033]2;claude: %s [%s]\007' "$dir" "$state" >/dev/tty 2>/dev/null
+else
+    # Session over - hand the title back to the shell.
+    printf '\033]2;%s\007' "$dir" >/dev/tty 2>/dev/null
+fi
+
+[ -n "$notify" ] && printf '\033]9;%s\007' "$notify" >/dev/tty 2>/dev/null
+
+exit 0
