@@ -1,6 +1,5 @@
 {
   "enabledPlugins": {
-    "go-upgrade@team-payment": true,
     "newstore@wabmalia": true,
     "payment@team-payment": true,
     "support@team-payment": true
