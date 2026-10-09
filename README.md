@@ -146,17 +146,24 @@ idempotently.
 
 Docker here means the CLI (`docker`, `docker-compose`) plus
 [Colima](https://github.com/abiosoft/colima) as the VM backend — no Docker
-Desktop, so no license concerns at a larger company. `bootstrap.sh` only
-installs the packages; it doesn't start the VM automatically since that's a
-resource cost you'd want to opt into per-machine.
+Desktop, so no license concerns at a larger company. The Brewfile installs
+Colima with `restart_service: :changed`, so `brew bundle` registers it as a
+login service (`brew services`) and starts it if it isn't running. It only
+restarts it when Colima itself is installed or upgraded. Containers with
+`restart: unless-stopped` therefore come back after a reboot.
 
 ```sh
-colima start   # first run downloads/boots the Linux VM
-docker ps      # confirms the CLI can reach it
+brew services list | grep colima   # should show "started"
+docker ps                          # confirms the CLI can reach it
 ```
 
-`colima stop` shuts the VM down; `colima start` again picks up where you
-left off (images/containers persist).
+To opt out on a given machine, run `brew services stop colima` (that also
+removes the login item). Re-running `bootstrap.sh` will start it again.
+
+`bootstrap.sh` also adds Homebrew's plugin dir to `cliPluginsExtraDirs` in
+`~/.docker/config.json`. Docker Desktop normally wires up `docker compose`
+for you; without it, `docker compose ...` fails with
+`unknown shorthand flag: 'd' in -d` even though `docker-compose` is installed.
 
 ## Company/client-specific config
 

@@ -32,7 +32,7 @@ brew "aws-sso-cli"  # `aws-sso` — SSO-based AWS credential management
 brew "rtk"          # token-optimized CLI proxy for Claude Code, wired up by bootstrap.sh after install
 brew "docker"        # Docker CLI (no Docker Desktop — see colima below)
 brew "docker-compose"
-brew "colima"        # runs the Docker VM backend; start with `colima start`
+brew "colima", restart_service: :changed  # Docker VM backend, started as a login service
 
 # --- Zsh completion/autosuggestion plugins (sourced directly in dot_zshrc, no framework) ---
 brew "zsh-completions"

@@ -48,7 +48,25 @@ for _d in "$_brew_prefix/share" \
 done
 unset _brew_prefix _d
 
-# --- 4. Dotfiles via chezmoi ---
+# --- 4. Docker CLI plugins (Colima) ---
+# Without Docker Desktop nothing registers Homebrew's docker-compose as a
+# `docker compose` subcommand, so `docker compose up -d` fails with
+#   unknown shorthand flag: 'd' in -d
+# Pointing the CLI at Homebrew's plugin dir fixes it. jq-merged rather than
+# managed by chezmoi because docker and colima write to this same file
+# (currentContext, auths), which chezmoi would then flag as drift on every
+# apply. Idempotent.
+echo "==> Registering Homebrew docker CLI plugins..."
+_docker_cfg="$HOME/.docker/config.json"
+mkdir -p "$HOME/.docker"
+[ -f "$_docker_cfg" ] || echo '{}' > "$_docker_cfg"
+jq --arg d "$(brew --prefix)/lib/docker/cli-plugins" \
+    '.cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$d] | unique)' \
+    "$_docker_cfg" > "$_docker_cfg.tmp"
+mv "$_docker_cfg.tmp" "$_docker_cfg"
+unset _docker_cfg
+
+# --- 5. Dotfiles via chezmoi ---
 # .chezmoiroot in this repo points chezmoi at ./home, so this repo doubles as
 # the chezmoi source directory — no separate dotfiles repo needed. This lays
 # down the generic ~/.claude/settings.json before the two steps below touch it.
@@ -74,7 +92,7 @@ if [ -f ./claude-settings.work.json ]; then
     chmod 600 "$HOME/.claude/settings.json"
 fi
 
-# --- 5. rtk (token-optimized CLI proxy for Claude Code) ---
+# --- 6. rtk (token-optimized CLI proxy for Claude Code) ---
 # Wires up the global hook + RTK.md so `rtk`-known commands get rewritten
 # transparently inside Claude Code. Runs after claude-code is installed and
 # after settings.json is in its final form above, since this patches that
@@ -85,7 +103,7 @@ if command -v rtk >/dev/null 2>&1; then
     rtk init -g --auto-patch
 fi
 
-# --- 6. macOS system defaults (optional, comment out if unwanted) ---
+# --- 7. macOS system defaults (optional, comment out if unwanted) ---
 echo "==> Applying macOS defaults..."
 ./macos/defaults.sh
 
