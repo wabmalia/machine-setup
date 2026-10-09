@@ -6,3 +6,6 @@
 # on it. See README.md "Company/client-specific config".
 
 cask "tuple"  # remote pair programming
+
+brew "k9s"  # terminal UI for Kubernetes clusters
+brew "kubectx"  # `kubectx`/`kubens` to switch Kubernetes contexts and namespaces
