@@ -19,6 +19,14 @@ defaults write NSGlobalDomain KeyRepeat -int 2                    # fast key rep
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false # hold key to repeat, not accent menu
 
+# Option+Tab cycles windows of the current app (macOS "Move focus to next
+# window", symbolic hotkey 27, default Cmd+`). Parameters are (char, keycode,
+# modifiers): 65535 = no printable char, 48 = Tab, 524288 = Option.
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 27 \
+    "<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>48</integer><integer>524288</integer></array><key>type</key><string>standard</string></dict></dict>"
+# Make keyboard-shortcut changes take effect without logging out.
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+
 # --- Finder ---
 defaults write com.apple.finder AppleShowAllFiles -bool true
 defaults write com.apple.finder ShowPathbar -bool true
