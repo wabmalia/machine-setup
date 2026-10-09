@@ -8,13 +8,19 @@
 # anything once ~/.gitconfig-gitlab.com no longer exists. See README.md for
 # the full checklist.
 #
-# Uses the same name/email already configured globally via chezmoi. If you
-# want work commits signed under a different email, hardcode it below —
-# this file never leaves your machine's copy of the repo... but remember it
-# WILL be committed if you push this repo, so only do that if you're fine
-# with that email being public.
+# The email comes from your GitLab account (its commit email) at run time,
+# via glab. GitLab only marks a commit Verified when the key's email, the
+# commit's email, and a verified address on your account all match, so this
+# keeps them in sync without ever writing the work email into this repo.
+# Needs `glab auth login` first. It deliberately does NOT fall back to the
+# global (personal) email: that would produce a key whose commits always show
+# Unverified.
 GIT_NAME="$(git config --global user.name)"
-GIT_EMAIL="$(git config --global user.email)"
+GIT_EMAIL="$(glab api user 2>/dev/null | jq -r '.commit_email // .email // empty' || true)"
+if [ -z "$GIT_EMAIL" ]; then
+    echo "    can't read your GitLab commit email. Run \`glab auth login --hostname gitlab.com\` first." >&2
+    exit 1
+fi
 
 IDENTITY_NAME="GitLab (Work) commit signing"
 IDENTITY_EMAIL="$GIT_EMAIL"

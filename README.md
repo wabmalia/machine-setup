@@ -94,8 +94,18 @@ chezmoi (the fingerprint is different on every machine), only referenced —
 `home/dot_gitconfig.tmpl` includes it conditionally, based on the repo's
 remote URL (`includeIf "hasconfig:remote.*.url:...gitlab.com..."`), so
 signing only kicks in for gitlab.com repos and every other repo is
-unaffected. `home/private_dot_gnupg/gpg-agent.conf` wires up `pinentry-mac`
-so the passphrase prompt is a native macOS dialog.
+unaffected. That same file also sets `user.email`, so repos on that host
+commit under the identity's email instead of the global one.
+`home/private_dot_gnupg/gpg-agent.conf` wires up `pinentry-mac` so the
+passphrase prompt is a native macOS dialog.
+
+The work identity reads its email from your GitLab account (its commit
+email) through `glab`, so log in with `glab auth login --hostname gitlab.com`
+first. GitLab only shows a commit as **Verified** when the key's email, the
+commit's email and a verified address on your account all match, and
+reading it from GitLab keeps them in sync without putting the work email in
+this repo. Without a `glab` login the script stops rather than falling back
+to your personal email.
 
 ## Claude Code config
 

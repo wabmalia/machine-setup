@@ -29,8 +29,11 @@ for identity_file in ./identities/*.sh; do
 
     echo "==> ${IDENTITY_NAME}"
 
+    # gpg exits 2 when no key matches, which is the normal first-run case.
+    # Without `|| true`, pipefail + set -e would end the script right here,
+    # silently (stderr is discarded), before a key is ever generated.
     fingerprint="$(gpg --list-secret-keys --with-colons "$IDENTITY_EMAIL" 2>/dev/null \
-        | awk -F: '/^fpr:/ {print $10; exit}')"
+        | awk -F: '/^fpr:/ {print $10; exit}' || true)"
 
     if [ -n "$fingerprint" ]; then
         echo "    key already exists ($fingerprint), skipping generation."
@@ -45,6 +48,8 @@ for identity_file in ./identities/*.sh; do
 # it gets overwritten on every run. Put your own tweaks in dot_gitconfig
 # instead.
 [user]
+    # Commit as the key's email too, so signed commits on this host verify.
+    email = ${IDENTITY_EMAIL}
     signingkey = ${fingerprint}
 [commit]
     gpgsign = true
