@@ -24,7 +24,9 @@
 # chezmoi) — e.g. commit signing key. Routed by remote URL, not by company
 # name, so this stays generic even if what's behind gitlab.com changes.
 # See README.md "Company/client-specific config".
-[includeIf "hasconfig:remote.*.url:git@gitlab.com:**"]
+# `*/**` rather than `**`: in these URL globs `**` only spans slashes as a
+# whole path segment, so a bare `:**` never matched any real repo path.
+[includeIf "hasconfig:remote.*.url:git@gitlab.com:*/**"]
     path = ~/.gitconfig-gitlab.com
 [includeIf "hasconfig:remote.*.url:https://gitlab.com/**"]
     path = ~/.gitconfig-gitlab.com
