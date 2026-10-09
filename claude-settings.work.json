@@ -10,7 +10,7 @@
       "autoUpdate": true,
       "source": {
         "source": "git",
-        "url": "https://gitlab.com/newstore/engineering/payment/skills.git"
+        "url": "git@gitlab.com:newstore/engineering/payment/skills.git"
       }
     }
   }
