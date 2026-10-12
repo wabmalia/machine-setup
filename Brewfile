@@ -48,7 +48,7 @@ cask "brave-browser"
 cask "raycast"       # launcher + window management (replaced Rectangle)
 cask "1password"
 cask "1password-cli"
-cask "claude-code"
+cask "claude-code@latest"
 cask "postman"
 
 # --- Fonts ---
