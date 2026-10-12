@@ -1,0 +1,6 @@
+# Machine-only shell tweaks from the gitignored local/ folder in the repo
+# (see the README's "Local, uncommitted tweaks" section).
+for _local_file in "{{ .chezmoi.workingTree }}"/local/*.zsh(N); do
+    source "$_local_file"
+done
+unset _local_file

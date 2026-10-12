@@ -8,3 +8,7 @@ id_rsa*
 id_ecdsa*
 *.pem
 *.ppk
+
+# Machine-only tweaks, never committed. See "Local, uncommitted tweaks"
+# in the README.
+/local/

@@ -28,6 +28,12 @@ if [ -f ./Brewfile.work ]; then
     brew bundle --file=./Brewfile.work
 fi
 
+# Machine-only packages, if present (see "Local, uncommitted tweaks").
+if [ -f ./local/Brewfile ]; then
+    echo "==> Installing packages from local/Brewfile..."
+    brew bundle --file=./local/Brewfile
+fi
+
 # --- 3. Zsh completion directory permissions ---
 # Homebrew creates some of its directories group-writable (775). zsh's compinit
 # refuses to load completions from any directory on fpath — or any parent of
@@ -92,6 +98,16 @@ if [ -f ./claude-settings.work.json ]; then
     chmod 600 "$HOME/.claude/settings.json"
 fi
 
+# Machine-only Claude settings, if present. Merged last so it wins over both
+# the generic and the work settings (see "Local, uncommitted tweaks").
+if [ -f ./local/claude-settings.json ]; then
+    echo "==> Merging local Claude settings..."
+    jq -s '.[0] * .[1]' "$HOME/.claude/settings.json" ./local/claude-settings.json \
+        > "$HOME/.claude/settings.json.tmp"
+    mv "$HOME/.claude/settings.json.tmp" "$HOME/.claude/settings.json"
+    chmod 600 "$HOME/.claude/settings.json"
+fi
+
 # --- 6. rtk (token-optimized CLI proxy for Claude Code) ---
 # Wires up the global hook + RTK.md so `rtk`-known commands get rewritten
 # transparently inside Claude Code. Runs after claude-code is installed and
@@ -106,5 +122,13 @@ fi
 # --- 7. macOS system defaults (optional, comment out if unwanted) ---
 echo "==> Applying macOS defaults..."
 ./macos/defaults.sh
+
+# --- 8. Machine-only steps, if present (see "Local, uncommitted tweaks") ---
+# Catch-all for anything the hooks above don't cover, e.g. extra macOS
+# defaults for this machine only. Runs last.
+if [ -f ./local/bootstrap.sh ]; then
+    echo "==> Running local/bootstrap.sh..."
+    bash ./local/bootstrap.sh
+fi
 
 echo "==> Done. Restart your shell (or open a new terminal tab) to pick up changes."

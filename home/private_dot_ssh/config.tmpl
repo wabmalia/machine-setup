@@ -1,9 +1,19 @@
+# Colima (shared Brewfile, login service) needs this to reach its VM. Written
+# exactly as `colima start` would add it, at the top, so colima sees it's
+# already there and doesn't prepend its own copy (which chezmoi would then
+# flag as drift). A missing file is silently skipped.
+Include {{ .chezmoi.homeDir }}/.colima/ssh_config
+
 # Managed by chezmoi — source lives in home/private_dot_ssh/config in the
 # machine-setup repo. Contains only host routing, never key material.
 #
 # Company/client-specific host blocks live in config.d/ (see config.d/work.conf)
 # so they can be deleted independently of this file.
 Include config.d/*.conf
+
+# Machine-only host config from the gitignored local/ folder in the repo (see
+# the README's "Local, uncommitted tweaks"). A missing file is silently skipped.
+Include {{ .chezmoi.workingTree }}/local/ssh.conf
 
 Host github.com
     IdentityFile ~/.ssh/id_ed25519_github

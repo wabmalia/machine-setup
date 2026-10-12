@@ -30,3 +30,9 @@
     path = ~/.gitconfig-gitlab.com
 [includeIf "hasconfig:remote.*.url:https://gitlab.com/**"]
     path = ~/.gitconfig-gitlab.com
+
+# Machine-only git config from the gitignored local/ folder in the repo (see
+# the README's "Local, uncommitted tweaks"). Git skips a missing include.
+# Last, so it overrides everything above.
+[include]
+    path = {{ .chezmoi.workingTree }}/local/gitconfig

@@ -16,3 +16,8 @@ macos-titlebar-style = tabs
 # Already Ghostty's default; set explicitly because ~/.claude/cc-status relies
 # on it to surface "Claude finished / needs you" alerts (OSC 9).
 desktop-notifications = true
+
+# Machine-only tweaks from the gitignored local/ folder in the repo (see the
+# README's "Local, uncommitted tweaks" section). Must stay last: included
+# files load after this one, so they override anything above. `?` = optional.
+config-file = ?{{ .chezmoi.workingTree }}/local/ghostty.conf

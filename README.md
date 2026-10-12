@@ -207,6 +207,34 @@ Then add the new job's config following the same pattern: rename/recreate
 name entirely if you want to keep more than one "work" context around, e.g.
 for a side client).
 
+## Local, uncommitted tweaks
+
+`local/` at the repo root is gitignored. Use it for tweaks that only make
+sense on this machine (a default terminal folder, a Claude model)
+and don't belong in the shared defaults. The tracked config and
+`bootstrap.sh` have a hook for each file, so re-running bootstrap keeps them.
+Every hook is optional: a missing file is skipped.
+
+| File in `local/`        | Loaded by                                             |
+|-------------------------|-------------------------------------------------------|
+| `ghostty.conf`          | `config-file` at the end of `home/dot_config/ghostty/config.tmpl` (overrides anything above it) |
+| `*.zsh`                 | `home/dot_zshrc.d/local.zsh.tmpl`, sourced like the other context files |
+| `ssh.conf`              | `Include` in `home/private_dot_ssh/config.tmpl`       |
+| `gitconfig`             | `[include]` at the end of `home/dot_gitconfig.tmpl`   |
+| `Brewfile`              | `bootstrap.sh`, after `Brewfile.work`                 |
+| `claude-settings.json`  | `bootstrap.sh`, deep-merged after `claude-settings.work.json` |
+| `bootstrap.sh`          | `bootstrap.sh`, last step; catch-all for anything else (e.g. extra macOS defaults) |
+
+Edits to the config files take effect directly (new Ghostty window, new
+shell, next ssh/git call); no `chezmoi apply` needed. The Brewfile, Claude
+settings and `bootstrap.sh` entries apply on the next `./bootstrap.sh`.
+
+The hooks are the only committed part. Adding a new kind of local file means
+adding a hook for it (a committed change); the contents of `local/` never are.
+
+`~/.zshrc.local` still works for one-offs that don't need to live next to the
+repo.
+
 ## Explicitly out of scope (for now)
 
 - **Other secrets** (API tokens, etc.): not handled here on purpose — these
