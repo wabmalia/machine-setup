@@ -24,6 +24,11 @@ defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false # hold key to
 # modifiers): 65535 = no printable char, 48 = Tab, 524288 = Option.
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 27 \
     "<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>48</integer><integer>524288</integer></array><key>type</key><string>standard</string></dict></dict>"
+# Free Cmd+Space for Raycast by disabling "Show Spotlight search" (symbolic
+# hotkey 64). Otherwise both open at once. 32 = space, 49 = Space keycode,
+# 1048576 = Cmd.
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 \
+    "<dict><key>enabled</key><false/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>1048576</integer></array><key>type</key><string>standard</string></dict></dict>"
 # Make keyboard-shortcut changes take effect without logging out.
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 
